@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\PacienteController;
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -12,6 +14,21 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
+});
+
+//Prueba de Crear paciente (esta ruta debe estar protegida por autenticación despues)
+Route::post('/pacientes', [PacienteController::class, 'store'])->name('pacientes.store');
+
+
+
+// vista de prueba>
+Route::get('/VistaPrueba', function () {
+    return Inertia::render('VistaPrueba');
+});
+
+//vista de login
+Route::get('/loginLucas', function () {
+    return Inertia::render('VistaLoginLucas');
 });
 
 Route::get('/dashboard', function () {
