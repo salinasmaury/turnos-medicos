@@ -1,9 +1,15 @@
 import { useState } from "react";
 import Layout from "../Layouts/Layout";
 import BusquedaLucas from "@/Components/BusquedaLucas";
+import AgregarPacienteModal from "@/Components/AgregarPacienteModal";
+import AgregarMedicoModal from "@/Components/AgregarMedicoModal";
 
 export default function VistaPrueba() {
     const [resultados, setResultados] = useState([]);
+    const [mostrarModalPaciente, setMostrarModalPaciente] = useState(false);
+    const [mostrarModalMedico, setMostrarModalMedico] = useState(false);
+    const [pacientes, setPacientes] = useState([]);
+    const [medicos, setMedicos] = useState([]);
 
     const datosEjemplo = [
         {
@@ -23,6 +29,14 @@ export default function VistaPrueba() {
         },
     ];
 
+    const handleAgregarPaciente = (paciente) => {
+        setPacientes([...pacientes, paciente]);
+    };
+
+    const handleAgregarMedico = (medico) => {
+        setMedicos([...medicos, medico]);
+    };
+
     const handleSearch = ({ profesional, especialidad, fecha }) => {
         const filtrados = datosEjemplo.filter((item) => {
             const coincideProfesional =
@@ -37,15 +51,28 @@ export default function VistaPrueba() {
     };
 
     return (
-        <Layout>
+        <Layout
+            onAgregarPaciente={() => setMostrarModalPaciente(true)}
+            onAgregarMedico={() => setMostrarModalMedico(true)}
+        >
+            <AgregarPacienteModal
+                isOpen={mostrarModalPaciente}
+                onClose={() => setMostrarModalPaciente(false)}
+                onGuardar={handleAgregarPaciente}
+            />
+
+            <AgregarMedicoModal
+                isOpen={mostrarModalMedico}
+                onClose={() => setMostrarModalMedico(false)}
+                onGuardar={handleAgregarMedico}
+            />
+
             <h1 className="text-2xl font-bold text-blue-600 mb-4">
                 Vista Prueba
             </h1>
 
-            {/* Barra de búsqueda */}
             <BusquedaLucas onSearch={handleSearch} />
 
-            {/* Resultados */}
             <div className="p-4 bg-white shadow rounded mt-4">
                 <h2 className="text-xl font-bold mb-2">Resultados</h2>
 
