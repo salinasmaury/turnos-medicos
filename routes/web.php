@@ -14,6 +14,16 @@ Route::get('/', function () {
     ]);
 });
 
+// vista de prueba>
+Route::get('/VistaPrueba', function () {
+    return Inertia::render('VistaPrueba');
+});
+
+//vista de login
+Route::get('/loginLucas', function () {
+    return Inertia::render('VistaLoginLucas');
+});
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
