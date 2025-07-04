@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\PacienteController;
+
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -13,6 +15,11 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+
+//Prueba de Crear paciente (esta ruta debe estar protegida por autenticación despues)
+Route::post('/pacientes', [PacienteController::class, 'store'])->name('pacientes.store');
+
+
 
 // vista de prueba>
 Route::get('/VistaPrueba', function () {

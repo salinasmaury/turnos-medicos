@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useForm } from "@inertiajs/react";
 
-export default function AgregarPacienteModal({ isOpen, onClose, onGuardar }) {
-    const [form, setForm] = useState({
+// La prop onGuardar ya no es necesaria, la eliminamos
+export default function AgregarPacienteModal({ isOpen, onClose }) {
+    const { data, setData, post, processing, errors, reset } = useForm({
         nombre: "",
         apellido: "",
         dni: "",
@@ -11,21 +12,17 @@ export default function AgregarPacienteModal({ isOpen, onClose, onGuardar }) {
     });
 
     const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        setData(e.target.name, e.target.value);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onGuardar(form);
-        setForm({
-            nombre: "",
-            apellido: "",
-            dni: "",
-            fecha_nacimiento: "",
-            telefono: "",
-            sexo: "",
+        post(route("pacientes.store"), {
+            onSuccess: () => {
+                reset();
+                onClose();
+            },
         });
-        onClose();
     };
 
     if (!isOpen) return null;
@@ -35,71 +32,98 @@ export default function AgregarPacienteModal({ isOpen, onClose, onGuardar }) {
             <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
                 <h2 className="text-xl font-bold mb-4">Agregar Paciente</h2>
                 <form onSubmit={handleSubmit} className="space-y-3">
-                    <input
-                        name="nombre"
-                        placeholder="Nombre"
-                        value={form.nombre}
-                        onChange={handleChange}
-                        className="w-full border px-3 py-2 rounded"
-                        required
-                    />
-                    <input
-                        name="apellido"
-                        placeholder="Apellido"
-                        value={form.apellido}
-                        onChange={handleChange}
-                        className="w-full border px-3 py-2 rounded"
-                        required
-                    />
-                    <input
-                        name="dni"
-                        placeholder="DNI"
-                        value={form.dni}
-                        onChange={handleChange}
-                        className="w-full border px-3 py-2 rounded"
-                        required
-                    />
-                    <input
-                        type="date"
-                        name="fecha_nacimiento"
-                        value={form.fecha_nacimiento}
-                        onChange={handleChange}
-                        className="w-full border px-3 py-2 rounded"
-                        required
-                    />
-                    <input
-                        name="telefono"
-                        placeholder="Teléfono"
-                        value={form.telefono}
-                        onChange={handleChange}
-                        className="w-full border px-3 py-2 rounded"
-                        required
-                    />
-                    <select
-                        name="sexo"
-                        value={form.sexo}
-                        onChange={handleChange}
-                        className="w-full border px-3 py-2 rounded"
-                        required
-                    >
-                        <option value="">Seleccionar sexo</option>
-                        <option value="M">Masculino</option>
-                        <option value="F">Femenino</option>
-                        <option value="X">Otro</option>
-                    </select>
+                    {/* CORRECCIÓN: El valor ahora debe ser data.nombre, no el antiguo 'form.nombre' */}
+                    <div>
+                        <input
+                            name="nombre"
+                            placeholder="Nombre"
+                            value={data.nombre}
+                            onChange={handleChange}
+                            className="w-full border px-3 py-2 rounded"
+                            required
+                        />
+                        {errors.nombre && <div className="text-red-500 text-sm mt-1">{errors.nombre}</div>}
+                    </div>
+
+                    <div>
+                        <input
+                            name="apellido"
+                            placeholder="Apellido"
+                            value={data.apellido}
+                            onChange={handleChange}
+                            className="w-full border px-3 py-2 rounded"
+                            required
+                        />
+                         {errors.apellido && <div className="text-red-500 text-sm mt-1">{errors.apellido}</div>}
+                    </div>
+
+                    <div>
+                        <input
+                            name="dni"
+                            placeholder="DNI"
+                            value={data.dni}
+                            onChange={handleChange}
+                            className="w-full border px-3 py-2 rounded"
+                            required
+                        />
+                         {errors.dni && <div className="text-red-500 text-sm mt-1">{errors.dni}</div>}
+                    </div>
+
+                    <div>
+                        <input
+                            type="date"
+                            name="fecha_nacimiento"
+                            value={data.fecha_nacimiento}
+                            onChange={handleChange}
+                            className="w-full border px-3 py-2 rounded"
+                            required
+                        />
+                        {errors.fecha_nacimiento && <div className="text-red-500 text-sm mt-1">{errors.fecha_nacimiento}</div>}
+                    </div>
+
+                    <div>
+                        <input
+                            name="telefono"
+                            placeholder="Teléfono"
+                            value={data.telefono}
+                            onChange={handleChange}
+                            className="w-full border px-3 py-2 rounded"
+                            required
+                        />
+                        {errors.telefono && <div className="text-red-500 text-sm mt-1">{errors.telefono}</div>}
+                    </div>
+
+                    <div>
+                        <select
+                            name="sexo"
+                            value={data.sexo}
+                            onChange={handleChange}
+                            className="w-full border px-3 py-2 rounded"
+                            required
+                        >
+                            <option value="">Seleccionar sexo</option>
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                            <option value="X">Otro</option>
+                        </select>
+                        {errors.sexo && <div className="text-red-500 text-sm mt-1">{errors.sexo}</div>}
+                    </div>
+
                     <div className="flex justify-end gap-2 pt-4">
                         <button
                             type="button"
                             onClick={onClose}
+                            disabled={processing}
                             className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                            disabled={processing}
+                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:bg-blue-300"
                         >
-                            Guardar
+                            {processing ? "Guardando..." : "Guardar"}
                         </button>
                     </div>
                 </form>
