@@ -9,16 +9,20 @@ class Turno extends Model
 {
     use HasFactory;
 
+    /**
+     * Los atributos que se pueden asignar de forma masiva.
+     */
     protected $fillable = [
         'medico_id',
         'paciente_id',
         'otorgado_por_user_id',
-        'fecha_hora',
+        'fecha',
+        'franja', // <-- AÑADIDO DE NUEVO
         'estado',
     ];
 
     /**
-     * Un turno pertenece a UN médico.
+     * Relación: Un turno pertenece a UN médico.
      */
     public function medico()
     {
@@ -26,7 +30,7 @@ class Turno extends Model
     }
 
     /**
-     * Un turno pertenece a UN paciente.
+     * Relación: Un turno pertenece a UN paciente.
      */
     public function paciente()
     {
@@ -34,12 +38,12 @@ class Turno extends Model
     }
 
     /**
-     * Un turno fue otorgado por UN usuario (administrativo).
+     * Relación: Un turno fue otorgado por UN usuario (administrativo).
      */
     public function otorgadoPor()
     {
-        // El segundo argumento es necesario porque el nombre de la función ('otorgadoPor')
-        // no coincide con el nombre de la columna ('otorgado_por_user_id').
+        // El segundo argumento 'otorgado_por_user_id' es necesario porque el nombre de la función
+        // no sigue la convención estándar de Laravel para el nombre de la columna.
         return $this->belongsTo(User::class, 'otorgado_por_user_id');
     }
 }

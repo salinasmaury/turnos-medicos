@@ -16,15 +16,14 @@ return new class extends Migration
             $table->string('nombre', 50);
             $table->string('apellido', 50);
             $table->string('dni', 12)->unique();
-            $table->date('fecha_nacimiento');
-            $table->string('telefono', 15)->nullable();
+            $table->date('fecha_nacimiento')->nullable();
+            $table->string('telefono', 20)->nullable();
             $table->enum('sexo', ['masculino', 'femenino']);
             
-            // --- NUEVA COLUMNA ---
-            $table->enum('turno', ['mañana', 'tarde', 'ambos']); // Se agrega la nueva columna
-
             $table->foreignId('especialidad_id')->constrained('especialidades');
+            
             $table->timestamps();
+            $table->softDeletes(); // <-- Columna para el borrado lógico
         });
     }
 

@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes; // <-- 1. Importar SoftDeletes
 
 class Medico extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes; // <-- 2. Usar el trait
 
+    
     protected $fillable = [
         'nombre',
         'apellido',
@@ -20,7 +22,7 @@ class Medico extends Model
     ];
 
     /**
-     * Un médico pertenece a UNA especialidad.
+     * Relación: Un médico pertenece a UNA especialidad.
      */
     public function especialidad()
     {
@@ -28,7 +30,7 @@ class Medico extends Model
     }
 
     /**
-     * Un médico tiene MUCHAS asignaciones de horario.
+     * Relación: Un médico tiene MUCHAS asignaciones de horario.
      */
     public function horarioMedico()
     {
@@ -36,7 +38,7 @@ class Medico extends Model
     }
 
     /**
-     * Un médico tiene MUCHOS bloqueos en su agenda.
+     * Relación: Un médico tiene MUCHOS bloqueos en su agenda.
      */
     public function bloqueos()
     {
@@ -44,7 +46,7 @@ class Medico extends Model
     }
 
     /**
-     * Un médico atiende MUCHOS turnos.
+     * Relación: Un médico atiende MUCHOS turnos.
      */
     public function turnos()
     {
