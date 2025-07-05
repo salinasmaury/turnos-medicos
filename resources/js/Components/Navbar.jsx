@@ -1,17 +1,15 @@
+import ApplicationLogo from "./ApplicationLogo";
+
 export default function Navbar({ onRefresh }) {
     return (
-        <header className="w-full bg-white shadow p-4 flex items-center justify-left space-x-4">
+        <>
+        <header className="w-full bg-background shadow p-4 flex items-center justify-left space-x-4">
             {/* Botón a la izquierda */}
-            <button
-                onClick={onRefresh}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-                Actualizar
-            </button>
+            <ApplicationLogo></ApplicationLogo>
             <button
                 onClick={() => (window.location.href = "/")}
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-            >
+                className="bg-secondary text-white px-4 py-2 rounded hover:bg-primary"
+                >
                 Ir a Inicio
             </button>
 
@@ -22,5 +20,6 @@ export default function Navbar({ onRefresh }) {
 
             {/* Podés agregar más elementos a la derecha si querés */}
         </header>
+        </>
     );
 }

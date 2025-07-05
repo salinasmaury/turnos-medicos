@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Layout from "../Layouts/Layout"; // Asumimos que tu Layout está aquí
-import BusquedaLucas from "@/Components/BusquedaLucas";
+import BusquedaLucas from "@/Components/Busqueda";
 import AgregarPacienteModal from "@/Components/AgregarPacienteModal";
 import AgregarMedicoModal from "@/Components/AgregarMedicoModal";
 

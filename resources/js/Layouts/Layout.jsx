@@ -3,7 +3,7 @@ import { usePage } from '@inertiajs/react';
 import toast from 'react-hot-toast';
 
 import Sidebar from "../Components/Sidebar";
-import Navbar from "@/Components/NavbarLucas";
+import Navbar from "@/Components/Navbar";
 
 export default function Layout({
     children,

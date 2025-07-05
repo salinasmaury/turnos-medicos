@@ -49,8 +49,8 @@ Route::get('/VistaPrueba', function () {
 });
 
 //vista de login
-Route::get('/loginLucas', function () {
-    return Inertia::render('VistaLoginLucas');
+Route::get('/loginForm', function () {
+    return Inertia::render('LoginForm');
 });
 
 Route::get('/dashboard', function () {
