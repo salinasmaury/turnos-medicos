@@ -1,6 +1,8 @@
+import "../../css/index.css"
+
 export default function Sidebar({ onAgregarPaciente, onAgregarMedico }) {
     return (
-        <aside className="w-64 h-screen bg-background text-primary p-6">
+        <aside className="w-64 h-screen bg-background text-primary p-6 aside" >
             <nav className="flex flex-col space-y-4">
                 <button
                     onClick={onAgregarPaciente}

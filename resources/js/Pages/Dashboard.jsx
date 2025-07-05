@@ -1,16 +1,17 @@
 // import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import Navbar from '@/Components/Navbar';
-import Sidebar from '@/Components/Sidebar';
+import { Main } from './Main';
+
+
 
 
 export default function Dashboard() {
     return (
         <>
         <Navbar></Navbar>
-
-        <Sidebar></Sidebar>
-        
+  
+        <Main />
         {/* <AuthenticatedLayout
             header={
                 
