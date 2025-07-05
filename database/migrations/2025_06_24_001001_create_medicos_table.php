@@ -19,6 +19,10 @@ return new class extends Migration
             $table->date('fecha_nacimiento');
             $table->string('telefono', 15)->nullable();
             $table->enum('sexo', ['masculino', 'femenino']);
+            
+            // --- NUEVA COLUMNA ---
+            $table->enum('turno', ['mañana', 'tarde', 'ambos']); // Se agrega la nueva columna
+
             $table->foreignId('especialidad_id')->constrained('especialidades');
             $table->timestamps();
         });

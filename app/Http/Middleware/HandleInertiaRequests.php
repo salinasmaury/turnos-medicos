@@ -29,11 +29,20 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        return [
-            ...parent::share($request),
+        // El método array_merge() es una forma más segura de añadir props
+        // sin sobreescribir las que comparte el padre.
+        return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $request->user(),
             ],
-        ];
+            // ESTA ES LA PARTE QUE FALTABA
+            // Aquí le decimos a Inertia que en cada petición,
+            // revise la sesión en busca de datos 'flasheados'
+            // con las claves 'success' y 'error' y los comparta.
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+            ],
+        ]);
     }
 }

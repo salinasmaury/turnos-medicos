@@ -41,6 +41,7 @@ export default function VistaPrueba({ pacientes, medicos }) {
             <AgregarMedicoModal
                 isOpen={mostrarModalMedico}
                 onClose={() => setMostrarModalMedico(false)}
+                especialidades={["Cardiología", "Pediatría", "Dermatología"]} // Asegúrate de pasar las especialidades correctas
                 // onGuardar ya no es necesario aquí tampoco
             />
 

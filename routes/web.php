@@ -1,10 +1,13 @@
 <?php
-
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PacienteController;
+use App\Http\Controllers\MedicoController;
+use App\Models\Especialidad; // <<-- Asegúrate de importar el modelo Especialidad aquí
+use App\Models\Paciente;     // <<-- Asegúrate de importar el modelo Paciente aquí
+use App\Models\Medico;       // <<-- Asegúrate de importar el modelo Medico aquí
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use App\Http\Controllers\PacienteController;
 
 
 Route::get('/', function () {
@@ -19,6 +22,25 @@ Route::get('/', function () {
 //Prueba de Crear paciente (esta ruta debe estar protegida por autenticación despues)
 Route::post('/pacientes', [PacienteController::class, 'store'])->name('pacientes.store');
 
+
+// Rutas para Médicos <<-- AGREGAMOS ESTAS RUTAS
+    Route::get('/medicos', [MedicoController::class, 'index'])->name('medicos.index'); // Ruta para la página principal de médicos
+    Route::post('/medicos', [MedicoController::class, 'store'])->name('medicos.store'); // Ruta que tu modal usa para guardar
+    // Puedes agregar más rutas para médicos (show, edit, update, destroy) aquí si las necesitas
+
+
+
+     Route::get('/VistaPrueba', function () {
+        $pacientes = Paciente::all(); // Obtener todos los pacientes
+        $medicos = Medico::with('especialidad')->get(); // Obtener médicos con su especialidad
+        $especialidades = Especialidad::all(); // <<-- OBTENER TODAS LAS ESPECIALIDADES
+
+        return Inertia::render('VistaPrueba', [
+            'pacientes' => $pacientes,
+            'medicos' => $medicos,
+            'especialidades' => $especialidades, // <<-- PASAR LAS ESPECIALIDADES COMO PROP
+        ]);
+    })->name('vista_prueba');
 
 
 // vista de prueba>
