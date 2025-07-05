@@ -10,7 +10,7 @@ class Medico extends Model
 {
     use HasFactory, SoftDeletes; // <-- 2. Usar el trait
 
-    
+
     protected $fillable = [
         'nombre',
         'apellido',
@@ -27,22 +27,6 @@ class Medico extends Model
     public function especialidad()
     {
         return $this->belongsTo(Especialidad::class);
-    }
-
-    /**
-     * Relación: Un médico tiene MUCHAS asignaciones de horario.
-     */
-    public function horarioMedico()
-    {
-        return $this->hasMany(HorarioMedico::class);
-    }
-
-    /**
-     * Relación: Un médico tiene MUCHOS bloqueos en su agenda.
-     */
-    public function bloqueos()
-    {
-        return $this->hasMany(Bloqueo::class);
     }
 
     /**
