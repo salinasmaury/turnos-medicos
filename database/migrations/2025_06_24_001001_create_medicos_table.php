@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::create('medicos', function (Blueprint $table) {
@@ -13,15 +16,18 @@ return new class extends Migration
             $table->string('nombre', 50);
             $table->string('apellido', 50);
             $table->string('dni', 12)->unique();
-            $table->date('fecha_nacimiento')->nullable();
-            $table->string('telefono', 20)->nullable();
+            $table->date('fecha_nacimiento');
+            $table->string('telefono', 15)->nullable();
             $table->enum('sexo', ['masculino', 'femenino']);
             $table->foreignId('especialidad_id')->constrained('especialidades');
             $table->timestamps();
-            $table->softDeletes();
+            $table->softDeletes(); // <<-- ASEGÚRATE QUE ESTA LÍNEA ESTÉ AQUÍ
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::dropIfExists('medicos');

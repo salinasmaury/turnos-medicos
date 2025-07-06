@@ -1,35 +1,36 @@
 import { useState } from "react";
-import Layout from "../Layouts/Layout"; // Asumimos que tu Layout está aquí
+import Layout from "../Layouts/Layout";
 import BusquedaLucas from "@/Components/Busqueda";
 import AgregarPacienteModal from "@/Components/AgregarPacienteModal";
 import AgregarMedicoModal from "@/Components/AgregarMedicoModal";
+import DeleteButton from "@/Components/DeleteButton";
+import VerMedicosEliminadosModal from "@/Components/VerMedicosEliminadosModal"; // <<-- IMPORTA EL NUEVO MODAL
+import toast from "react-hot-toast"; // Asegúrate de importar toast
 
-// Con Inertia, los datos como 'pacientes' y 'medicos' vienen como props desde el controlador.
-// MODIFICACIÓN: Asegúrate de que 'especialidades' se reciba como prop
-export default function VistaPrueba({ pacientes, medicos, especialidades }) {
+export default function VistaPrueba({
+    pacientes,
+    medicos,
+    especialidades,
+    viewMode = "active",
+}) {
     const [resultados, setResultados] = useState([]);
-    // El estado para mostrar/ocultar los modales se mantiene, ya que es un estado de UI.
     const [mostrarModalPaciente, setMostrarModalPaciente] = useState(false);
     const [mostrarModalMedico, setMostrarModalMedico] = useState(false);
+    const [mostrarModalMedicosEliminados, setMostrarModalMedicosEliminados] =
+        useState(false); // <<-- NUEVO ESTADO
 
-    const datosEjemplo = [
-        // ... (tus datos de ejemplo para la búsqueda se mantienen igual)
-    ];
-
-    // La función de búsqueda local se mantiene igual.
     const handleSearch = ({ profesional, especialidad, fecha }) => {
-        // ...
+        // ... tu lógica de búsqueda
     };
 
     return (
-        // El Layout recibe las funciones para abrir los modales.
-        // Estas funciones se pasarán internamente al Sidebar.
         <Layout
             onAgregarPaciente={() => setMostrarModalPaciente(true)}
             onAgregarMedico={() => setMostrarModalMedico(true)}
+            onVerMedicosEliminados={() =>
+                setMostrarModalMedicosEliminados(true)
+            } // <<-- PASA LA FUNCIÓN AL LAYOUT/SIDEBAR
         >
-            {/* El modal ya no necesita la prop 'onGuardar'. */}
-            {/* Se encarga de su propio envío de datos con el hook 'useForm'. */}
             <AgregarPacienteModal
                 isOpen={mostrarModalPaciente}
                 onClose={() => setMostrarModalPaciente(false)}
@@ -38,28 +39,63 @@ export default function VistaPrueba({ pacientes, medicos, especialidades }) {
             <AgregarMedicoModal
                 isOpen={mostrarModalMedico}
                 onClose={() => setMostrarModalMedico(false)}
-                // MODIFICACIÓN: Usa la prop 'especialidades' que viene del controlador
                 especialidades={especialidades}
             />
 
+            {/* Renderiza el nuevo modal de médicos eliminados */}
+            <VerMedicosEliminadosModal
+                isOpen={mostrarModalMedicosEliminados}
+                onClose={() => setMostrarModalMedicosEliminados(false)}
+            />
+
             <h1 className="text-2xl font-bold text-blue-600 mb-4">
-                Vista Prueba
+                Gestión Principal de Médicos
             </h1>
 
             <BusquedaLucas onSearch={handleSearch} />
 
+            {/* Sección de listado de Médicos (siempre activos en esta vista) */}
             <div className="p-4 bg-white shadow rounded mt-4">
                 <h2 className="text-xl font-bold mb-2">
-                    Resultados de Búsqueda
+                    Lista de Médicos Activos
                 </h2>
-                {/* ... (la sección de resultados se mantiene igual) ... */}
+                <ul>
+                    {medicos && medicos.length > 0 ? (
+                        medicos.map((medico) => (
+                            <li
+                                key={medico.id}
+                                className="border-b py-2 flex justify-between items-center"
+                            >
+                                <span>
+                                    {medico.nombre} {medico.apellido} -{" "}
+                                    {medico.especialidad
+                                        ? medico.especialidad.nombre
+                                        : "Sin especialidad"}
+                                </span>
+                                <div>
+                                    <DeleteButton
+                                        routeName="medicos.destroy"
+                                        itemId={medico.id}
+                                        confirmMessage="¿Estás seguro de que quieres eliminar este médico (se eliminará suavemente)?"
+                                        successMessage="Médico eliminado suavemente con éxito."
+                                        errorMessage="Error al eliminar el médico."
+                                        buttonText="Eliminar"
+                                    />
+                                </div>
+                            </li>
+                        ))
+                    ) : (
+                        <li className="py-2 text-gray-500">
+                            No hay médicos registrados.
+                        </li>
+                    )}
+                </ul>
             </div>
 
-            {/* Mostramos la lista de pacientes que viene desde el controlador */}
+            {/* Sección de listado de Pacientes */}
             <div className="p-4 bg-white shadow rounded mt-4">
                 <h2 className="text-xl font-bold mb-2">Lista de Pacientes</h2>
                 <ul>
-                    {/* Asegúrate de que 'pacientes' no sea null antes de mapear */}
                     {pacientes &&
                         pacientes.map((paciente) => (
                             <li key={paciente.id}>
@@ -69,21 +105,12 @@ export default function VistaPrueba({ pacientes, medicos, especialidades }) {
                 </ul>
             </div>
 
-            {/* Opcional: Mostrar la lista de médicos (para verificar que los datos llegan) */}
+            {/* Sección de Resultados de Búsqueda */}
             <div className="p-4 bg-white shadow rounded mt-4">
-                <h2 className="text-xl font-bold mb-2">Lista de Médicos</h2>
-                <ul>
-                    {/* Asegúrate de que 'medicos' no sea null antes de mapear */}
-                    {medicos &&
-                        medicos.map((medico) => (
-                            <li key={medico.id}>
-                                {medico.nombre} {medico.apellido} -{" "}
-                                {medico.especialidad
-                                    ? medico.especialidad.nombre
-                                    : "Sin especialidad"}
-                            </li>
-                        ))}
-                </ul>
+                <h2 className="text-xl font-bold mb-2">
+                    Resultados de Búsqueda
+                </h2>
+                {/* ... tu sección de resultados de búsqueda ... */}
             </div>
         </Layout>
     );
