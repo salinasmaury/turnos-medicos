@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('medicos', function (Blueprint $table) {
@@ -19,17 +16,12 @@ return new class extends Migration
             $table->date('fecha_nacimiento')->nullable();
             $table->string('telefono', 20)->nullable();
             $table->enum('sexo', ['masculino', 'femenino']);
-            
             $table->foreignId('especialidad_id')->constrained('especialidades');
-            
             $table->timestamps();
-            $table->softDeletes(); // <-- Columna para el borrado lógico
+            $table->softDeletes();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('medicos');
