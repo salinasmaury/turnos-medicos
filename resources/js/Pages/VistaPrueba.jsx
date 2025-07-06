@@ -5,7 +5,8 @@ import AgregarPacienteModal from "@/Components/AgregarPacienteModal";
 import AgregarMedicoModal from "@/Components/AgregarMedicoModal";
 
 // Con Inertia, los datos como 'pacientes' y 'medicos' vienen como props desde el controlador.
-export default function VistaPrueba({ pacientes, medicos }) {
+// MODIFICACIÓN: Asegúrate de que 'especialidades' se reciba como prop
+export default function VistaPrueba({ pacientes, medicos, especialidades }) {
     const [resultados, setResultados] = useState([]);
     // El estado para mostrar/ocultar los modales se mantiene, ya que es un estado de UI.
     const [mostrarModalPaciente, setMostrarModalPaciente] = useState(false);
@@ -19,10 +20,6 @@ export default function VistaPrueba({ pacientes, medicos }) {
     const handleSearch = ({ profesional, especialidad, fecha }) => {
         // ...
     };
-
-    // Ya no necesitamos handleAgregarPaciente ni handleAgregarMedico.
-    // Inertia se encargará de actualizar la lista de pacientes/medicos automáticamente
-    // cuando el formulario del modal se envíe con éxito.
 
     return (
         // El Layout recibe las funciones para abrir los modales.
@@ -41,8 +38,8 @@ export default function VistaPrueba({ pacientes, medicos }) {
             <AgregarMedicoModal
                 isOpen={mostrarModalMedico}
                 onClose={() => setMostrarModalMedico(false)}
-                especialidades={["Cardiología", "Pediatría", "Dermatología"]} // Asegúrate de pasar las especialidades correctas
-                // onGuardar ya no es necesario aquí tampoco
+                // MODIFICACIÓN: Usa la prop 'especialidades' que viene del controlador
+                especialidades={especialidades}
             />
 
             <h1 className="text-2xl font-bold text-blue-600 mb-4">
@@ -52,17 +49,40 @@ export default function VistaPrueba({ pacientes, medicos }) {
             <BusquedaLucas onSearch={handleSearch} />
 
             <div className="p-4 bg-white shadow rounded mt-4">
-                <h2 className="text-xl font-bold mb-2">Resultados de Búsqueda</h2>
+                <h2 className="text-xl font-bold mb-2">
+                    Resultados de Búsqueda
+                </h2>
                 {/* ... (la sección de resultados se mantiene igual) ... */}
             </div>
 
-             {/* Mostramos la lista de pacientes que viene desde el controlador */}
+            {/* Mostramos la lista de pacientes que viene desde el controlador */}
             <div className="p-4 bg-white shadow rounded mt-4">
                 <h2 className="text-xl font-bold mb-2">Lista de Pacientes</h2>
                 <ul>
-                    {pacientes && pacientes.map((paciente) => (
-                        <li key={paciente.id}>{paciente.nombre} {paciente.apellido}</li>
-                    ))}
+                    {/* Asegúrate de que 'pacientes' no sea null antes de mapear */}
+                    {pacientes &&
+                        pacientes.map((paciente) => (
+                            <li key={paciente.id}>
+                                {paciente.nombre} {paciente.apellido}
+                            </li>
+                        ))}
+                </ul>
+            </div>
+
+            {/* Opcional: Mostrar la lista de médicos (para verificar que los datos llegan) */}
+            <div className="p-4 bg-white shadow rounded mt-4">
+                <h2 className="text-xl font-bold mb-2">Lista de Médicos</h2>
+                <ul>
+                    {/* Asegúrate de que 'medicos' no sea null antes de mapear */}
+                    {medicos &&
+                        medicos.map((medico) => (
+                            <li key={medico.id}>
+                                {medico.nombre} {medico.apellido} -{" "}
+                                {medico.especialidad
+                                    ? medico.especialidad.nombre
+                                    : "Sin especialidad"}
+                            </li>
+                        ))}
                 </ul>
             </div>
         </Layout>
