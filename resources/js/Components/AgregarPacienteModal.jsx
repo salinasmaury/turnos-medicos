@@ -42,7 +42,11 @@ export default function AgregarPacienteModal({ isOpen, onClose }) {
                             className="w-full border px-3 py-2 rounded"
                             required
                         />
-                        {errors.nombre && <div className="text-red-500 text-sm mt-1">{errors.nombre}</div>}
+                        {errors.nombre && (
+                            <div className="text-red-500 text-sm mt-1">
+                                {errors.nombre}
+                            </div>
+                        )}
                     </div>
 
                     <div>
@@ -54,7 +58,11 @@ export default function AgregarPacienteModal({ isOpen, onClose }) {
                             className="w-full border px-3 py-2 rounded"
                             required
                         />
-                         {errors.apellido && <div className="text-red-500 text-sm mt-1">{errors.apellido}</div>}
+                        {errors.apellido && (
+                            <div className="text-red-500 text-sm mt-1">
+                                {errors.apellido}
+                            </div>
+                        )}
                     </div>
 
                     <div>
@@ -66,7 +74,11 @@ export default function AgregarPacienteModal({ isOpen, onClose }) {
                             className="w-full border px-3 py-2 rounded"
                             required
                         />
-                         {errors.dni && <div className="text-red-500 text-sm mt-1">{errors.dni}</div>}
+                        {errors.dni && (
+                            <div className="text-red-500 text-sm mt-1">
+                                {errors.dni}
+                            </div>
+                        )}
                     </div>
 
                     <div>
@@ -78,7 +90,11 @@ export default function AgregarPacienteModal({ isOpen, onClose }) {
                             className="w-full border px-3 py-2 rounded"
                             required
                         />
-                        {errors.fecha_nacimiento && <div className="text-red-500 text-sm mt-1">{errors.fecha_nacimiento}</div>}
+                        {errors.fecha_nacimiento && (
+                            <div className="text-red-500 text-sm mt-1">
+                                {errors.fecha_nacimiento}
+                            </div>
+                        )}
                     </div>
 
                     <div>
@@ -90,7 +106,11 @@ export default function AgregarPacienteModal({ isOpen, onClose }) {
                             className="w-full border px-3 py-2 rounded"
                             required
                         />
-                        {errors.telefono && <div className="text-red-500 text-sm mt-1">{errors.telefono}</div>}
+                        {errors.telefono && (
+                            <div className="text-red-500 text-sm mt-1">
+                                {errors.telefono}
+                            </div>
+                        )}
                     </div>
 
                     <div>
@@ -104,9 +124,12 @@ export default function AgregarPacienteModal({ isOpen, onClose }) {
                             <option value="">Seleccionar sexo</option>
                             <option value="M">Masculino</option>
                             <option value="F">Femenino</option>
-                            <option value="X">Otro</option>
                         </select>
-                        {errors.sexo && <div className="text-red-500 text-sm mt-1">{errors.sexo}</div>}
+                        {errors.sexo && (
+                            <div className="text-red-500 text-sm mt-1">
+                                {errors.sexo}
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex justify-end gap-2 pt-4">

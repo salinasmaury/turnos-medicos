@@ -4,26 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Models\Medico;
 use App\Models\HorarioMedico;
-use App\Models\Especialidad; // Importa el modelo Especialidad
+use App\Models\Especialidad;
+use App\Models\Paciente;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB; // Para transacciones de base de datos
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class MedicoController extends Controller
 {
     /**
-     * Muestra la lista de médicos con sus especialidades.
-     * También pasa las especialidades para el formulario del modal.
+     * Muestra la lista de médicos activos (o puede redirigir a VistaPrueba).
      */
     public function index()
     {
         $medicos = Medico::with('especialidad')->latest()->paginate(10);
-        $especialidades = Especialidad::all(); // Obtén todas las especialidades
+        $especialidades = Especialidad::all();
 
         return Inertia::render('Medicos/Index', [
             'medicos' => $medicos,
-            'especialidades' => $especialidades, // Pasa las especialidades al frontend
+            'especialidades' => $especialidades,
+            'viewMode' => 'active',
         ]);
     }
 
@@ -32,22 +33,18 @@ class MedicoController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. VALIDACIÓN DE LOS DATOS DEL MÉDICO Y LOS HORARIOS
-        // Es crucial que las reglas de validación coincidan con los nombres
-        // de los campos que envías desde el modal (data.nombre, data.dni, data.especialidad_id, data.dias, data.franja).
         $validatedData = $request->validate([
             'nombre' => 'required|string|max:50',
             'apellido' => 'required|string|max:50',
-            'dni' => 'required|string|max:12|unique:medicos,dni', // Asegura DNI único
+            'dni' => 'required|string|max:12|unique:medicos,dni',
             'fecha_nacimiento' => 'required|date',
             'telefono' => 'nullable|string|max:15',
-            'sexo' => 'required|string|in:masculino,femenino', // Asegura los valores esperados por tu ENUM
-            'especialidad_id' => 'required|exists:especialidades,id', // Debe ser un ID existente
-            'dias' => 'required|array|min:1', // Debe ser un array con al menos un día
-            'dias.*' => 'integer|between:1,7', // Cada elemento del array 'dias' debe ser un entero entre 1 y 7
-            'franja' => 'required|string|in:Mañana,Tarde', // Debe ser 'Mañana' o 'Tarde'
+            'sexo' => 'required|string|in:masculino,femenino',
+            'especialidad_id' => 'required|exists:especialidades,id',
+            'dias' => 'required|array|min:1',
+            'dias.*' => 'integer|between:1,7',
+            'franja' => 'required|string|in:Mañana,Tarde',
         ], [
-            // Mensajes personalizados de error (opcional pero recomendado)
             'dni.unique' => 'Ya existe un médico con este DNI.',
             'especialidad_id.required' => 'La especialidad es obligatoria.',
             'especialidad_id.exists' => 'La especialidad seleccionada no es válida.',
@@ -61,10 +58,8 @@ class MedicoController extends Controller
             'sexo.in' => 'El sexo debe ser "masculino" o "femenino".',
         ]);
 
-        // 2. USO DE TRANSACCIONES: Asegura que si falla la creación del horario, el médico no se cree.
         DB::beginTransaction();
         try {
-            // 3. CREACIÓN DEL MÉDICO
             $medico = Medico::create([
                 'nombre' => $validatedData['nombre'],
                 'apellido' => $validatedData['apellido'],
@@ -75,30 +70,73 @@ class MedicoController extends Controller
                 'especialidad_id' => $validatedData['especialidad_id'],
             ]);
 
-            // 4. CREACIÓN DE LOS HORARIOS DEL MÉDICO
-            // Itera sobre los días seleccionados y crea un registro HorarioMedico para cada uno.
             foreach ($validatedData['dias'] as $dia_id) {
                 HorarioMedico::create([
                     'medico_id' => $medico->id,
-                    'dia_semana' => $dia_id, // El ID del día (1 a 7)
+                    'dia_semana' => $dia_id,
                     'franja' => $validatedData['franja'],
                 ]);
             }
 
-            DB::commit(); // Confirma la transacción si todo fue exitoso
-
-            // 5. REDIRECCIÓN CON MENSAJE DE ÉXITO
-            // Inertia.js interceptará esta redirección y actualizará la página de forma SPA-like.
-            // El mensaje 'success' será capturado por tu componente FlashMessages.jsx.
-            return Redirect::back()->with('success', 'Médico y horarios agregados con éxito.');
+            DB::commit();
+            return Redirect::back()->with('success', 'Médico agregado con éxito.');
 
         } catch (\Exception $e) {
-            DB::rollBack(); // Revierte la transacción si algo salió mal
-            // 6. REDIRECCIÓN CON MENSAJE DE ERROR GENERAL
-            // Si hay una excepción no manejada por la validación, envía un mensaje de error.
+            DB::rollBack();
             return Redirect::back()->with('error', 'Error al agregar el médico: ' . $e->getMessage());
         }
     }
 
-    // Aquí irían otros métodos como show, edit, update, destroy para el Medico.
+    /**
+     * Elimina suavemente un médico de la base de datos.
+     */
+    public function destroy(Medico $medico)
+    {
+        try {
+            $medico->delete();
+            return Redirect::back()->with('success', 'Médico eliminado (suavemente) con éxito.');
+        } catch (\Exception $e) {
+            return Redirect::back()->with('error', 'Error al eliminar el médico: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Devuelve los médicos eliminados suavemente como JSON.
+     * Este método es el que tu modal llamará para obtener los datos.
+     */
+    public function getTrashedMedicos()
+    {
+        $medicosEliminados = Medico::onlyTrashed()->with('especialidad')->get();
+        return response()->json([
+            'medicos' => $medicosEliminados
+        ]);
+    }
+
+    /**
+     * Restaura un médico eliminado suavemente.
+     */
+    public function restore($id)
+    {
+        $medico = Medico::withTrashed()->findOrFail($id);
+        try {
+            $medico->restore();
+            return response()->json(['success' => 'Médico restaurado con éxito.']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error al restaurar el médico: ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Elimina permanentemente un médico (force delete).
+     */
+    public function forceDelete($id)
+    {
+        $medico = Medico::withTrashed()->findOrFail($id);
+        try {
+            $medico->forceDelete();
+            return response()->json(['success' => 'Médico eliminado permanentemente.']);
+        } catch (\Exception | \Throwable $e) {
+            return response()->json(['error' => 'Error al eliminar el médico permanentemente: ' . $e->getMessage()], 500);
+        }
+    }
 }

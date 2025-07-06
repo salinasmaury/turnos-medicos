@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Medico extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes; // <<-- Asegúrate que 'SoftDeletes' esté usado aquí
 
     protected $fillable = [
         'nombre',
