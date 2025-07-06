@@ -2,6 +2,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\MedicoController;
+use App\Http\Controllers\TurnoController;
 use App\Models\Especialidad; // <<-- Asegúrate de importar el modelo Especialidad aquí
 use App\Models\Paciente;     // <<-- Asegúrate de importar el modelo Paciente aquí
 use App\Models\Medico;       // <<-- Asegúrate de importar el modelo Medico aquí
@@ -61,6 +62,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+
+
+
+    Route::get('/turnos', [TurnoController::class, 'index'])->name('turnos.index');
+    Route::post('/turnos', [TurnoController::class, 'store'])->name('turnos.store');
+    
 });
 
 require __DIR__.'/auth.php';
