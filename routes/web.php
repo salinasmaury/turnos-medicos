@@ -77,6 +77,10 @@ Route::get('/loginForm', function () {
     return Inertia::render('LoginForm');
 })->name('loginForm');
 
+Route::get('/nosotros', function () {
+    return Inertia::render('Nosotros');
+})->name('nosotros');
+
 
 // Rutas que SI requieren autenticación (manteniendo la protección original)
 Route::middleware(['auth', 'verified'])->group(function () {
