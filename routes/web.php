@@ -90,9 +90,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
 
-    Route::get('/turnos', [TurnoController::class, 'index'])->name('turnos.index');
-    Route::post('/turnos', [TurnoController::class, 'store'])->name('turnos.store');
-    
+    Route::resource('turnos', TurnoController::class);
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
