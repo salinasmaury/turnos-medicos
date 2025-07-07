@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Head, router, usePage, useForm } from '@inertiajs/react';
+import Layout from '@/Layouts/Layout';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import InputConBoton from '@/Components/InputConBoton';
 import SelectConLabel from '@/Components/SelectConLabel';
@@ -46,9 +47,7 @@ export default function PaginaGestionTurnos({ auth, pacienteEncontrado = null, m
     }, [data.medico_id, data.fecha, fechaError]);
 
     const handleBuscarClick = () => {
-        // --- CAMBIO CLAVE ---
-        // Ahora, la búsqueda de paciente también envía el médico y la fecha
-        // para que el backend pueda devolver la lista de turnos actualizada si es necesario.
+      
         router.get(
             route('turnos.index'),
             { 
@@ -101,7 +100,8 @@ export default function PaginaGestionTurnos({ auth, pacienteEncontrado = null, m
     const sePuedeGuardar = data.paciente_id && data.medico_id && data.fecha && !fechaError;
 
     return (
-        <AuthenticatedLayout
+        <Layout
+            auth={auth}
             user={auth.user}
             header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Gestión de Turnos</h2>}
         >
@@ -205,6 +205,6 @@ export default function PaginaGestionTurnos({ auth, pacienteEncontrado = null, m
                     )}
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </Layout>
     );
 }

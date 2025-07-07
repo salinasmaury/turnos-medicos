@@ -5,36 +5,29 @@ import toast from 'react-hot-toast';
 import Sidebar from "../Components/Sidebar";
 import Navbar from "@/Components/Navbar";
 
-export default function Layout({
-    children,
-    onAgregarPaciente,
-    onAgregarMedico,
-}) {
-    // 1. Obtenemos el objeto 'flash' desde las props de Inertia
+// Recibe 'auth' para pasarlo al Navbar.
+// Recibe 'children' que es la página actual (ej. Dashboard, Turnos).
+// Recibe el resto de props (...props) para pasarlos al Sidebar (ej. onAgregarPaciente).
+export default function Layout({ auth, children, ...props }) {
     const { flash } = usePage().props;
 
-    // 2. Usamos useEffect para reaccionar cuando 'flash' cambie
     useEffect(() => {
-        // CORRECCIÓN: Primero verificamos si 'flash' existe y luego si tiene la propiedad 'success'.
-        // Esto evita el error en la carga inicial de la página.
         if (flash && flash.success) {
             toast.success(flash.success);
         }
-
-        // Hacemos la misma comprobación para los mensajes de error.
         if (flash && flash.error) {
             toast.error(flash.error);
         }
-    }, [flash]); // Este efecto se ejecuta solo si 'flash' cambia
+    }, [flash]);
 
     return (
         <div className="min-h-screen flex flex-col">
-            <Navbar onRefresh={() => window.location.reload()} />
+            {/* Pasamos la información del usuario al Navbar */}
+            <Navbar user={auth.user} />
             <div className="flex flex-1">
-                <Sidebar
-                    onAgregarPaciente={onAgregarPaciente}
-                    onAgregarMedico={onAgregarMedico}
-                />
+                {/* Pasamos todas las funciones de los modales al Sidebar */}
+                <Sidebar {...props} />
+                {/* Aquí se renderizará el contenido de la página actual */}
                 <main className="flex-1 p-6 bg-gray-100">{children}</main>
             </div>
         </div>
