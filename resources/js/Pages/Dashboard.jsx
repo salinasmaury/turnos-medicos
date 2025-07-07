@@ -76,9 +76,7 @@ export default function Dashboard({
                 onClose={() => setMostrarModalMedicosEliminados(false)}
             />
 
-            <h1 className="text-2xl font-bold text-blue-600 mb-4">
-                Dashboard de Gestión
-            </h1>
+            <h1 className="text-2xl font-bold text-blue-600 mb-4">Dashboard</h1>
 
             {/* <<-- SECCIÓN DE TURNOS -->> */}
             <div className="p-4 bg-white shadow rounded mb-4">
@@ -184,7 +182,7 @@ export default function Dashboard({
             </div>
             {/* <<-- FIN DE LA SECCIÓN DE TURNOS -->> */}
 
-            <BusquedaLucas onSearch={handleSearch} />
+            {/* <BusquedaLucas onSearch={handleSearch} /> comente para sacar la barra de busqueda                     */}
 
             {/* Sección de listado de Médicos Activos */}
             <div className="p-4 bg-white shadow rounded mt-4">

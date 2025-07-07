@@ -37,8 +37,8 @@ class MedicoController extends Controller
 
         // <<-- MODIFICACIÓN AQUÍ -->>
         // Opción 2: Validar un rango de edad (ej. entre 18 y 100 años)
-        $minAllowedBirthDate = Carbon::now()->subYears(100)->format('d-m-Y'); // No más de 100 años
-        $maxAllowedBirthDate = Carbon::now()->subYears(18)->format('d-m-Y') ;  //Al menos 18 años
+        $minAllowedBirthDate = Carbon::now()->subYears(100)->format('Y-m-d');
+        $maxAllowedBirthDate = Carbon::now()->subYears(18)->format('Y-m-d');
 
 
         $validatedData = $request->validate([
@@ -46,7 +46,7 @@ class MedicoController extends Controller
             'apellido' => 'required|string|max:50',
             'dni' => 'required|string|max:12|unique:medicos,dni',
              // <<-- MODIFICACIÓN AQUÍ PARA LA FECHA DE NACIMIENTO -->>
-            'fecha_nacimiento' => 'required|date|before_or_equal:' . $minAllowedBirthDate .  $maxAllowedBirthDate      ,
+            'fecha_nacimiento' => 'required|date|after_or_equal:' . $minAllowedBirthDate . '|before_or_equal:' . $maxAllowedBirthDate,
             // <<-- FIN DE LA MODIFICACIÓN -->>
             'telefono' => 'nullable|string|max:15',
             'sexo' => 'required|string|in:masculino,femenino',
