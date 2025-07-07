@@ -120,7 +120,7 @@ export default function VerMedicosEliminadosModal({ isOpen, onClose }) {
                                         >
                                             Restaurar
                                         </button>
-                                        <DeleteButton
+                                        {/* <DeleteButton
                                             routeName="medicos.forceDelete" // Ruta para eliminar permanentemente
                                             itemId={medico.id}
                                             confirmMessage="¡ADVERTENCIA! ¿Estás seguro de que quieres ELIMINAR PERMANENTEMENTE este médico? Esta acción no se puede deshacer."
@@ -132,7 +132,7 @@ export default function VerMedicosEliminadosModal({ isOpen, onClose }) {
                                             // Cuando DeleteButton tiene éxito, recargará la página (Inertia.reload)
                                             // y el modal se actualizará automáticamente si isOpen se mantiene true
                                             // o se cerrará y reabrirá para una nueva carga.
-                                        />
+                                        /> */}
                                     </div>
                                 </li>
                             ))}

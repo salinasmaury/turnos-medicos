@@ -13,8 +13,11 @@ class Turno extends Model
         'medico_id',
         'paciente_id',
         'otorgado_por_user_id',
-        'fecha',
-        'estado',
+        'fecha',//Cambié 'fecha' a 'fecha_hora' para reflejar que es una fecha y hora,
+        'estado'
+    ];
+    protected $casts = [
+        'fecha' => 'date', // <<-- CORREGIDO A 'fecha_hora'
     ];
 
     public function medico()
