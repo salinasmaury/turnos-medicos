@@ -155,15 +155,7 @@ export default function Dashboard({
                                                 ? turno.paciente.telefono
                                                 : "N/A"}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {/* Formatear solo la hora de la columna 'fecha' */}
-                                            {/* {turno.fecha // <<-- Usando turno.fecha
-                                                ? format(
-                                                      parseISO(turno.fecha),
-                                                      ""
-                                                  )
-                                                : "N/A"} */}
-                                        </td>
+
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                             {turno.otorgado_por
                                                 ? turno.otorgado_por.name
@@ -181,8 +173,6 @@ export default function Dashboard({
                 )}
             </div>
             {/* <<-- FIN DE LA SECCIÓN DE TURNOS -->> */}
-
-            {/* <BusquedaLucas onSearch={handleSearch} /> comente para sacar la barra de busqueda                     */}
 
             {/* Sección de listado de Médicos Activos */}
             <div className="p-4 bg-white shadow rounded mt-4">

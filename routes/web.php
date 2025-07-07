@@ -4,28 +4,17 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\MedicoController;
 use App\Http\Controllers\TurnoController;
-use App\Models\Especialidad; // Asegúrate de que estas importaciones estén
-use App\Models\Paciente;     // Asegúrate de que estas importaciones estén
-use App\Models\Medico;       // Asegúrate de que estas importaciones estén
-use App\Models\Turno;        // Asegúrate de que estas importaciones estén
-use App\Models\User;         // Asegúrate de que estas importaciones estén
+use App\Models\Especialidad;
+use App\Models\Paciente;
+use App\Models\Medico;
+use App\Models\Turno;
+use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Carbon\Carbon; // <<-- IMPORTA CARBON PARA MANEJAR FECHAS
+use Carbon\Carbon;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
-// Ruta de bienvenida principal (sin autenticación)
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -35,8 +24,6 @@ Route::get('/', function () {
     ]);
 });
 
-// Rutas accesibles sin autenticación por ahora (para desarrollo)
-// **NOTA:** En producción, considera proteger estas rutas con middleware 'auth'.
 
 // Rutas para Pacientes
 Route::post('/pacientes', [PacienteController::class, 'store'])->name('pacientes.store');
@@ -57,21 +44,6 @@ Route::post('/medicos/{id}/restaurar', [MedicoController::class, 'restore'])->na
 Route::delete('/medicos/{id}/forceDelete', [MedicoController::class, 'forceDelete'])->name('medicos.forceDelete');
 
 
-// Ruta de la Vista de Prueba (tu página principal de gestión de médicos activos por defecto)
-// Route::get('/VistaPrueba', function () {
-//     $pacientes = Paciente::all();
-//     $medicos = Medico::with('especialidad')->get(); // <<-- SIEMPRE PASA MÉDICOS ACTIVOS AQUÍ
-//     $especialidades = Especialidad::all();
-
-//     return Inertia::render('VistaPrueba', [
-//         'pacientes' => $pacientes,
-//         'medicos' => $medicos,
-//         'especialidades' => $especialidades,
-//         'viewMode' => 'active', // Siempre 'active' para esta ruta
-//     ]);
-// })->name('vista_prueba');
-
-
 // Ruta para el formulario de login (si usas una vista de login personalizada)
 Route::get('/loginForm', function () {
     return Inertia::render('LoginForm');
@@ -82,23 +54,23 @@ Route::get('/nosotros', function () {
 })->name('nosotros');
 
 
-// Rutas que SI requieren autenticación (manteniendo la protección original)
+// Rutas que requieren autenticacion 
 Route::middleware(['auth', 'verified'])->group(function () {
-//RUTA DEL DASHBOARD (MODIFICADA PARA CARGAR TODOS LOS DATOS)
+    //RUTA DEL DASHBOARD (MODIFICADA PARA CARGAR TODOS LOS DATOS)
     Route::get('/dashboard/{date?}', function ($date = null) {
         // Si no se proporciona una fecha, usa la fecha actual
         $selectedDate = $date ? Carbon::parse($date) : Carbon::today();
 
         // Obtener los turnos para la fecha seleccionada
         $turnos = Turno::with(['paciente', 'medico', 'otorgadoPor'])
-                        ->whereDate('fecha', $selectedDate->toDateString())
-                        ->orderBy('fecha')
-                        ->get();
+            ->whereDate('fecha', $selectedDate->toDateString())
+            ->orderBy('fecha')
+            ->get();
 
-        // <<-- ASEGÚRATE DE QUE ESTAS LÍNEAS ESTÉN PRESENTES Y CORRECTAS -->>
-        $pacientes = Paciente::all(); // Obtener todos los pacientes
-        $medicos = Medico::with('especialidad')->get(); // Obtener todos los médicos con su especialidad
-        $especialidades = Especialidad::all(); // Obtener todas las especialidades
+
+        $pacientes = Paciente::all();
+        $medicos = Medico::with('especialidad')->get();
+        $especialidades = Especialidad::all();
         // <<-- FIN DE LA VERIFICACIÓN -->>
 
         return Inertia::render('Dashboard', [
@@ -113,10 +85,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/turnos', [TurnoController::class, 'index'])->name('turnos.index');
     Route::post('/turnos', [TurnoController::class, 'store'])->name('turnos.store');
-        // <<-- ESTAS SON LAS RUTAS DEL PERFIL QUE DEBEN ESTAR -->>
+    // <<-- ESTAS SON LAS RUTAS DEL PERFIL QUE DEBEN ESTAR -->>
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::resource('turnos', TurnoController::class);
     // <<-- FIN RUTAS DEL PERFIL -->>
 });
 

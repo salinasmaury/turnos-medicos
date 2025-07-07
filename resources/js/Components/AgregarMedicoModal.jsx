@@ -1,18 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useForm, usePage } from "@inertiajs/react";
 import Modal from "@/Components/Modal";
-// Asegúrate de que estos componentes existan y estén correctamente importados
-// import InputLabel from "@/Components/InputLabel";
-// import TextInput from "@/Components/TextInput";
-// import InputError from "@/Components/InputError";
-// import PrimaryButton from "@/Components/PrimaryButton";
-// import SecondaryButton from "@/Components/SecondaryButton";
+
 import toast from "react-hot-toast";
 
 export default function AgregarMedicoModal({
     isOpen,
     onClose,
-    especialidades, // <<-- ASEGÚRATE QUE SE RECIBE AQUÍ
+    especialidades, 
 }) {
     const { errors } = usePage().props;
 
@@ -22,10 +17,10 @@ export default function AgregarMedicoModal({
         dni: "",
         telefono: "",
         fecha_nacimiento: "",
-        sexo: "masculino", // Valor por defecto
-        especialidad_id: "", // Asegúrate de que esté inicializado
+        sexo: "masculino",
+        especialidad_id: "", 
         dias: [],
-        franja: "Mañana", // Valor por defecto
+        franja: "Mañana", 
     });
 
     // Resetear el formulario cuando el modal se cierra
@@ -304,60 +299,6 @@ export default function AgregarMedicoModal({
                     )}
                 </div>
                 {/* <<-- FIN SECCIÓN ESPECIALIDADES -->> */}
-
-                {/* <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700">
-                        Días de Trabajo
-                    </label>
-                    <div className="grid grid-cols-2 gap-2 mt-1">
-                        {diasSemana.map((dia) => (
-                            <label key={dia.id} className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    value={dia.id}
-                                    checked={data.dias.includes(dia.id)}
-                                    onChange={handleCheckboxChange}
-                                    className="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
-                                />
-                                <span className="ml-2 text-sm text-gray-600">
-                                    {dia.nombre}
-                                </span>
-                            </label>
-                        ))}
-                    </div>
-                    {errors.dias && (
-                        <div className="text-red-500 text-sm mt-1">
-                            {errors.dias}
-                        </div>
-                    )}
-                </div>
-
-                <div className="mb-4">
-                    <label
-                        htmlFor="franja"
-                        className="block text-sm font-medium text-gray-700"
-                    >
-                        Franja Horaria
-                    </label>
-                    <select
-                        id="franja"
-                        name="franja"
-                        value={data.franja}
-                        onChange={(e) => setData("franja", e.target.value)}
-                        className={`mt-1 block w-full border px-3 py-2 rounded ${
-                            errors.franja ? "border-red-500" : "border-gray-300"
-                        }`}
-                        required
-                    >
-                        <option value="Mañana">Mañana</option>
-                        <option value="Tarde">Tarde</option>
-                    </select>
-                    {errors.franja && (
-                        <div className="text-red-500 text-sm mt-1">
-                            {errors.franja}
-                        </div>
-                    )}
-                </div> */}
 
                 <div className="mt-6 flex justify-end">
                     <button
