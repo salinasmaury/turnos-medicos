@@ -52,25 +52,30 @@ class TurnoController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'medico_id' => 'required|exists:medicos,id',
-            'paciente_id' => 'required|exists:pacientes,id',
-            'fecha' => 'required|date',
-        ]);
+        $request->validate(
+            [
+                'medico_id' => 'required|exists:medicos,id',
+                'paciente_id' => 'required|exists:pacientes,id',
+                'fecha' => 'required|date|after_or_equal:today',
+            ],
+            [
+                'fecha.after_or_equal' => 'La fecha debe ser una fecha posterior o igual a la de hoy.',
+            ]
+        );
 
         // REGLA A: El paciente no puede tener dos turnos con el mismo médico el mismo día.
         $turnoPacienteExistente = Turno::where('medico_id', $request->medico_id)
-                                       ->where('paciente_id', $request->paciente_id)
-                                       ->where('fecha', $request->fecha)
-                                       ->first();
+            ->where('paciente_id', $request->paciente_id)
+            ->where('fecha', $request->fecha)
+            ->first();
         if ($turnoPacienteExistente) {
             return Redirect::back()->with('error', 'El paciente ya tiene un turno con este médico para esa fecha.');
         }
 
         // REGLA B: El médico no puede tener más de 8 turnos en un día.
         $cantidadTurnosMedico = Turno::where('medico_id', $request->medico_id)
-                                     ->where('fecha', $request->fecha)
-                                     ->count();
+            ->where('fecha', $request->fecha)
+            ->count();
         if ($cantidadTurnosMedico >= 8) {
             return Redirect::back()->with('error', 'El médico ha alcanzado el límite de 8 turnos para esta fecha.');
         }
@@ -90,24 +95,16 @@ class TurnoController extends Controller
     }
 
 
-    /**
-     * Muestra el formulario para editar un turno.
-     * Con el enfoque de modal, este método no se utiliza directamente al hacer clic,
-     * pero es una buena práctica mantenerlo por si se necesita una página de edición dedicada.
-     */
     public function edit(Turno $turno)
     {
-        // Esta función se deja por convención de 'resource'.
-        // No es necesaria para el flujo del modal que hemos implementado.
+        //NO HACE FALTA PONER NADA ACA, SE MANEJA CON EL MODAL DE EDICIÓN -- NO TOQUEEEEN
+
     }
 
 
-    /**
-     * Actualiza un turno existente en la base de datos.
-     */
     public function update(Request $request, Turno $turno)
     {
-        // Hacemos la validación más flexible con 'sometimes'
+
         // para que funcione tanto con el modal de edición como con el checkbox de estado.
         $request->validate([
             'fecha' => 'sometimes|required|date',
@@ -118,8 +115,8 @@ class TurnoController extends Controller
         // Lógica de negocio para evitar conflictos al cambiar la fecha
         if ($request->has('fecha') && $request->fecha != $turno->fecha) {
             $cantidadTurnosMedico = Turno::where('medico_id', $turno->medico_id)
-                                         ->where('fecha', $request->fecha)
-                                         ->count();
+                ->where('fecha', $request->fecha)
+                ->count();
             if ($cantidadTurnosMedico >= 8) {
                 return Redirect::back()->with('error', 'El médico ya tiene 8 turnos para la nueva fecha seleccionada.');
             }

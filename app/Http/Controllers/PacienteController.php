@@ -25,14 +25,10 @@ class PacienteController extends Controller
     }
 
 
-    /**
-     * Guarda un nuevo paciente en la base de datos.
-     * Este método es llamado por el formulario del modal.
-     */
+   
     public function store(Request $request)
     {
-        // 1. VALIDACIÓN
-        // Las reglas de validación se basan en tu migración y en los datos que envía el formulario.
+       
         $validatedData = $request->validate([
             'nombre' => 'required|string|max:50',
             'apellido' => 'required|string|max:50',
@@ -42,8 +38,7 @@ class PacienteController extends Controller
             'sexo' => 'required|string|in:M,F', // Valida los valores del <select>
         ]);
 
-        // 2. TRANSFORMACIÓN DE DATOS
-        // Como el frontend envía 'M'/'F' y la base de datos espera 'masculino'/'femenino',
+       
         // transformamos el valor ANTES de guardarlo.
         if ($validatedData['sexo'] === 'M') {
             $validatedData['sexo'] = 'masculino';
@@ -56,8 +51,7 @@ class PacienteController extends Controller
         Paciente::create($validatedData);
 
         // 4. REDIRECCIÓN A LA PÁGINA ANTERIOR
-        // En lugar de redirigir a una ruta específica, usamos Redirect::back().
-        // Esto recarga la página actual (la que está detrás del modal) y le pasa el mensaje de éxito.
+       
         // Es la forma ideal de manejar envíos de formularios en modales con Inertia.
         return Redirect::back()->with('success', 'Paciente agregado con éxito.');
     }

@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { useForm, usePage } from "@inertiajs/react";
+import { useForm, usePage, router } from "@inertiajs/react";
 import Modal from "@/Components/Modal";
-
 import toast from "react-hot-toast";
 
-export default function AgregarMedicoModal({
-    isOpen,
-    onClose,
-    especialidades, 
-}) {
+// Ya no necesitamos recibir 'especialidades' como un prop.
+export default function AgregarMedicoModal({ isOpen, onClose }) {
     const { errors } = usePage().props;
+
+    // --- INICIO DE LA MODIFICACIÓN ---
+    // Creamos un array constante con las especialidades.
+    const especialidadesFijas = [
+        { id: 1, nombre: 'Cardiología' },
+        { id: 2, nombre: 'Alergista' },
+        { id: 3, nombre: 'Traumatología' },
+        { id: 4, nombre: 'Dermatología' },
+        { id: 5, nombre: 'Clínica Médica' },
+    ];
+    // --- FIN DE LA MODIFICACIÓN ---
 
     const { data, setData, post, processing, reset, clearErrors } = useForm({
         nombre: "",
@@ -18,18 +25,18 @@ export default function AgregarMedicoModal({
         telefono: "",
         fecha_nacimiento: "",
         sexo: "masculino",
-        especialidad_id: "", 
+        especialidad_id: "",
         dias: [],
-        franja: "Mañana", 
+        franja: "Mañana",
     });
 
     // Resetear el formulario cuando el modal se cierra
     useEffect(() => {
         if (!isOpen) {
             reset();
-            clearErrors(); // Limpia los errores de Inertia también
+            clearErrors();
         }
-    }, [isOpen, reset, clearErrors]); // Agrega clearErrors a las dependencias
+    }, [isOpen, reset, clearErrors]);
 
     const handleCheckboxChange = (e) => {
         const { value, checked } = e.target;
@@ -49,7 +56,6 @@ export default function AgregarMedicoModal({
                 toast.success("Médico agregado con éxito.");
                 onClose();
                 reset();
-                // Opcional: recargar la página para que la lista de médicos se actualice
                 router.reload({ only: ["medicos"] });
             },
             onError: (formErrors) => {
@@ -82,8 +88,6 @@ export default function AgregarMedicoModal({
                             Hubo problemas con tu envío. Por favor, revisa los
                             campos marcados.
                         </span>
-                        {/* Puedes listar errores generales aquí si no están asociados a campos específicos */}
-                        {/* <ul>{Object.values(errors).map((err, i) => <li key={i}>{err}</li>)}</ul> */}
                     </div>
                 )}
 
@@ -276,21 +280,15 @@ export default function AgregarMedicoModal({
                         required
                     >
                         <option value="">Seleccionar especialidad</option>
-                        {/* Asegúrate que especialidades no sea null/undefined antes de mapear */}
-                        {especialidades && especialidades.length > 0 ? (
-                            especialidades.map((especialidad) => (
-                                <option
-                                    key={especialidad.id}
-                                    value={especialidad.id}
-                                >
-                                    {especialidad.nombre}
-                                </option>
-                            ))
-                        ) : (
-                            <option value="" disabled>
-                                Cargando especialidades o no hay disponibles
+                        {/* Se mapea el array de especialidades fijas */}
+                        {especialidadesFijas.map((especialidad) => (
+                            <option
+                                key={especialidad.id}
+                                value={especialidad.id}
+                            >
+                                {especialidad.nombre}
                             </option>
-                        )}
+                        ))}
                     </select>
                     {errors.especialidad_id && (
                         <div className="text-red-500 text-sm mt-1">
