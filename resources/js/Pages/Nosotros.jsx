@@ -1,15 +1,22 @@
 import ApplicationLogo from "@/Components/ApplicationLogo"
-import { Head } from "@inertiajs/react"
+import { Head, Link } from "@inertiajs/react"
 
 export default function Nosotros (){
 
     
    return(
     <>
-    <Head >
-        <ApplicationLogo></ApplicationLogo>
-    </Head>
-    <div>
+    <Head title="Nosotros" />
+            <div className="p-4">
+                {/* Logo como botón que redirige al inicio */}
+                <Link href="/" className="inline-block mb-4">
+                    <ApplicationLogo className="w-16 h-auto hover:opacity-80 transition" />
+                </Link>
+
+                
+                
+            </div>
+        
         
 
     <main className="flex-1">
@@ -234,7 +241,7 @@ export default function Nosotros (){
             </div>
         </section>
     </main>
-    </div>
+    
     </>
    )
     
