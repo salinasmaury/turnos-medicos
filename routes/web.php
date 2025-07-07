@@ -4,12 +4,15 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\MedicoController;
 use App\Http\Controllers\TurnoController;
-use App\Models\Especialidad; // <<-- Asegúrate de importar el modelo Especialidad aquí
-use App\Models\Paciente;     // <<-- Asegúrate de importar el modelo Paciente aquí
-use App\Models\Medico;       // <<-- Asegúrate de importar el modelo Medico aquí
+use App\Models\Especialidad; // Asegúrate de que estas importaciones estén
+use App\Models\Paciente;     // Asegúrate de que estas importaciones estén
+use App\Models\Medico;       // Asegúrate de que estas importaciones estén
+use App\Models\Turno;        // Asegúrate de que estas importaciones estén
+use App\Models\User;         // Asegúrate de que estas importaciones estén
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Carbon\Carbon; // <<-- IMPORTA CARBON PARA MANEJAR FECHAS
 
 /*
 |--------------------------------------------------------------------------
@@ -55,18 +58,18 @@ Route::delete('/medicos/{id}/forceDelete', [MedicoController::class, 'forceDelet
 
 
 // Ruta de la Vista de Prueba (tu página principal de gestión de médicos activos por defecto)
-Route::get('/VistaPrueba', function () {
-    $pacientes = Paciente::all();
-    $medicos = Medico::with('especialidad')->get(); // <<-- SIEMPRE PASA MÉDICOS ACTIVOS AQUÍ
-    $especialidades = Especialidad::all();
+// Route::get('/VistaPrueba', function () {
+//     $pacientes = Paciente::all();
+//     $medicos = Medico::with('especialidad')->get(); // <<-- SIEMPRE PASA MÉDICOS ACTIVOS AQUÍ
+//     $especialidades = Especialidad::all();
 
-    return Inertia::render('VistaPrueba', [
-        'pacientes' => $pacientes,
-        'medicos' => $medicos,
-        'especialidades' => $especialidades,
-        'viewMode' => 'active', // Siempre 'active' para esta ruta
-    ]);
-})->name('vista_prueba');
+//     return Inertia::render('VistaPrueba', [
+//         'pacientes' => $pacientes,
+//         'medicos' => $medicos,
+//         'especialidades' => $especialidades,
+//         'viewMode' => 'active', // Siempre 'active' para esta ruta
+//     ]);
+// })->name('vista_prueba');
 
 
 // Ruta para el formulario de login (si usas una vista de login personalizada)
@@ -77,20 +80,40 @@ Route::get('/loginForm', function () {
 
 // Rutas que SI requieren autenticación (manteniendo la protección original)
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Ruta del Dashboard (ejemplo de ruta protegida)
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
+//RUTA DEL DASHBOARD (MODIFICADA PARA CARGAR TODOS LOS DATOS)
+    Route::get('/dashboard/{date?}', function ($date = null) {
+        // Si no se proporciona una fecha, usa la fecha actual
+        $selectedDate = $date ? Carbon::parse($date) : Carbon::today();
+
+        // Obtener los turnos para la fecha seleccionada
+        $turnos = Turno::with(['paciente', 'medico', 'otorgadoPor'])
+                        ->whereDate('fecha', $selectedDate->toDateString())
+                        ->orderBy('fecha')
+                        ->get();
+
+        // <<-- ASEGÚRATE DE QUE ESTAS LÍNEAS ESTÉN PRESENTES Y CORRECTAS -->>
+        $pacientes = Paciente::all(); // Obtener todos los pacientes
+        $medicos = Medico::with('especialidad')->get(); // Obtener todos los médicos con su especialidad
+        $especialidades = Especialidad::all(); // Obtener todas las especialidades
+        // <<-- FIN DE LA VERIFICACIÓN -->>
+
+        return Inertia::render('Dashboard', [
+            'turnos' => $turnos,
+            'selectedDate' => $selectedDate->toDateString(),
+            'pacientes' => $pacientes,        // <<-- PASAR PACIENTES
+            'medicos' => $medicos,            // <<-- PASAR MÉDICOS
+            'especialidades' => $especialidades, // <<-- PASAR ESPECIALIDADES
+            'viewMode' => 'active', // Si lo usas en tu Dashboard.jsx
+        ]);
     })->name('dashboard');
 
-    // Rutas de Perfil de usuario (normalmente siempre protegidas)
+    Route::get('/turnos', [TurnoController::class, 'index'])->name('turnos.index');
+    Route::post('/turnos', [TurnoController::class, 'store'])->name('turnos.store');
+        // <<-- ESTAS SON LAS RUTAS DEL PERFIL QUE DEBEN ESTAR -->>
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-
-
-
-    Route::resource('turnos', TurnoController::class);
+    // <<-- FIN RUTAS DEL PERFIL -->>
 });
 
 require __DIR__ . '/auth.php';

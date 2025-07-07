@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Medico;
 use App\Models\HorarioMedico;
 use App\Models\Especialidad;
-use App\Models\Paciente;
+// use App\Models\Paciente;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Carbon\Carbon;
 
 class MedicoController extends Controller
 {
@@ -33,28 +34,41 @@ class MedicoController extends Controller
      */
     public function store(Request $request)
     {
+
+        // <<-- MODIFICACIÓN AQUÍ -->>
+        // Opción 2: Validar un rango de edad (ej. entre 18 y 100 años)
+        $minAllowedBirthDate = Carbon::now()->subYears(100)->format('Y-m-d');
+        $maxAllowedBirthDate = Carbon::now()->subYears(18)->format('Y-m-d');
+
+
         $validatedData = $request->validate([
             'nombre' => 'required|string|max:50',
             'apellido' => 'required|string|max:50',
             'dni' => 'required|string|max:12|unique:medicos,dni',
-            'fecha_nacimiento' => 'required|date',
+             // <<-- MODIFICACIÓN AQUÍ PARA LA FECHA DE NACIMIENTO -->>
+            'fecha_nacimiento' => 'required|date|after_or_equal:' . $minAllowedBirthDate . '|before_or_equal:' . $maxAllowedBirthDate,
+            // <<-- FIN DE LA MODIFICACIÓN -->>
             'telefono' => 'nullable|string|max:15',
             'sexo' => 'required|string|in:masculino,femenino',
             'especialidad_id' => 'required|exists:especialidades,id',
-            'dias' => 'required|array|min:1',
-            'dias.*' => 'integer|between:1,7',
-            'franja' => 'required|string|in:Mañana,Tarde',
+            // 'dias' => 'required|array|min:1',
+            // 'dias.*' => 'integer|between:1,7',
+            // 'franja' => 'required|string|in:Mañana,Tarde',
         ], [
             'dni.unique' => 'Ya existe un médico con este DNI.',
+            // <<-- MENSAJE PERSONALIZADO PARA LA FECHA DE NACIMIENTO -->>
+            'fecha_nacimiento.after_or_equal' => 'La fecha de nacimiento es demasiado antigua.', // Mensaje actualizado
+            'fecha_nacimiento.before_or_equal' => 'El médico debe ser mayor de 18 años.',
+            // <<-- FIN DEL MENSAJE PERSONALIZADO -->>
             'especialidad_id.required' => 'La especialidad es obligatoria.',
             'especialidad_id.exists' => 'La especialidad seleccionada no es válida.',
-            'dias.required' => 'Debes seleccionar al menos un día de trabajo.',
-            'dias.array' => 'Los días de trabajo deben ser un array.',
-            'dias.min' => 'Debes seleccionar al menos un día de trabajo.',
-            'dias.*.integer' => 'El día de la semana debe ser un número entero.',
-            'dias.*.between' => 'El día de la semana debe estar entre 1 (Lunes) y 7 (Domingo).',
-            'franja.required' => 'La franja horaria es obligatoria.',
-            'franja.in' => 'La franja horaria debe ser "Mañana" o "Tarde".',
+            // 'dias.required' => 'Debes seleccionar al menos un día de trabajo.',
+            // 'dias.array' => 'Los días de trabajo deben ser un array.',
+            // 'dias.min' => 'Debes seleccionar al menos un día de trabajo.',
+            // 'dias.*.integer' => 'El día de la semana debe ser un número entero.',
+            // 'dias.*.between' => 'El día de la semana debe estar entre 1 (Lunes) y 7 (Domingo).',
+            // 'franja.required' => 'La franja horaria es obligatoria.',
+            // 'franja.in' => 'La franja horaria debe ser "Mañana" o "Tarde".',
             'sexo.in' => 'El sexo debe ser "masculino" o "femenino".',
         ]);
 
@@ -70,13 +84,13 @@ class MedicoController extends Controller
                 'especialidad_id' => $validatedData['especialidad_id'],
             ]);
 
-            foreach ($validatedData['dias'] as $dia_id) {
-                HorarioMedico::create([
-                    'medico_id' => $medico->id,
-                    'dia_semana' => $dia_id,
-                    'franja' => $validatedData['franja'],
-                ]);
-            }
+            // foreach ($validatedData['dias'] as $dia_id) {
+            //     HorarioMedico::create([
+            //         'medico_id' => $medico->id,
+            //         'dia_semana' => $dia_id,
+            //         'franja' => $validatedData['franja'],
+            //     ]);
+            // }
 
             DB::commit();
             return Redirect::back()->with('success', 'Médico agregado con éxito.');
@@ -94,7 +108,7 @@ class MedicoController extends Controller
     {
         try {
             $medico->delete();
-            return Redirect::back()->with('success', 'Médico eliminado (suavemente) con éxito.');
+            return Redirect::back()->with('success', 'Médico eliminado con éxito.');
         } catch (\Exception $e) {
             return Redirect::back()->with('error', 'Error al eliminar el médico: ' . $e->getMessage());
         }
